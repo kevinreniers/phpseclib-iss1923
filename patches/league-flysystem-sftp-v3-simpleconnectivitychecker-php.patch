@@ -1,0 +1,10 @@
+--- /dev/null
++++ ../SimpleConnectivityChecker.php
+@@ -10,6 +10,6 @@
+ {
+     public function isConnected(SFTP $connection): bool
+     {
+-        return $connection->isConnected();
++        return $connection->ping() && $connection->isConnected();
+     }
+ }

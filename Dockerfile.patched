@@ -4,8 +4,10 @@ WORKDIR /app
 COPY bin bin/
 COPY config config/
 COPY src src/
+COPY patches patches/
 COPY public public/
-COPY .env composer.json composer.lock symfony.lock ./
+COPY composer.json.patched composer.json
+COPY .env composer.lock symfony.lock ./
 
 COPY --from=composer /usr/bin/composer /usr/bin/composer
 RUN apt update \

@@ -1,14 +1,24 @@
 services:
   app:
-    build: .
+    build:
+      dockerfile: Dockerfile
     environment:
       SFTP_HOST: proftpd
       SFTP_USER: ftpuser
       SFTP_PASS: foobar
       SFTP_PORT: 2222
       RABBITMQ_URL: amqp://guest:guest@rabbit:5672
-    volumes:
-      - .:/app
+    command: php bin/console rabbit:consume -m 100 task
+    working_dir: /app
+  patched-app:
+    build:
+      dockerfile: Dockerfile.patched
+    environment:
+      SFTP_HOST: proftpd
+      SFTP_USER: ftpuser
+      SFTP_PASS: foobar
+      SFTP_PORT: 2222
+      RABBITMQ_URL: amqp://guest:guest@rabbit:5672
     command: php bin/console rabbit:consume -m 100 task
     working_dir: /app
   generator:
@@ -16,7 +26,7 @@ services:
     environment:
       SFTP_HOST: proftpd
       SFTP_USER: ftpuser
-      SFTP_PASS: foobarr
+      SFTP_PASS: foobar
       SFTP_PORT: 22
       RABBITMQ_URL: amqp://guest:guest@rabbit:5672
     volumes:
