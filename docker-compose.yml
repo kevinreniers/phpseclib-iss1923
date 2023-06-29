@@ -1,0 +1,42 @@
+services:
+  app:
+    build: .
+    environment:
+      SFTP_HOST: proftpd
+      SFTP_USER: ftpuser
+      SFTP_PASS: foobar
+      SFTP_PORT: 2222
+      RABBITMQ_URL: amqp://guest:guest@rabbit:5672
+    volumes:
+      - .:/app
+    command: php bin/console rabbit:consume -m 100 task
+    working_dir: /app
+  generator:
+    build: .
+    environment:
+      SFTP_HOST: proftpd
+      SFTP_USER: ftpuser
+      SFTP_PASS: foobarr
+      SFTP_PORT: 22
+      RABBITMQ_URL: amqp://guest:guest@rabbit:5672
+    volumes:
+      - .:/app
+    command: php bin/console app:task 1
+    working_dir: /app
+  proftpd:
+    image: instantlinux/proftpd
+    environment:
+      ALLOW_OVERWRITE: off
+      PASV_ADDRESS: 127.0.0.1
+      SFTP_ENABLE: on
+      MAX_INSTANCES: 50
+    volumes:
+      - ./etc.d/proftpd/IdleTimeout.conf:/etc/proftpd/conf.d/IdleTimeout.conf
+    secrets:
+      - ftp-user-password-secret
+  rabbit:
+    image: rabbitmq:3.11.13
+
+secrets:
+  ftp-user-password-secret:
+    file: pw.txt 
