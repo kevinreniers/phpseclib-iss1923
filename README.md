@@ -4,23 +4,19 @@ Starting the different services.
 
 - `docker compose up proftpd` to start the proftpd server
 - `docker compose up app` to start the long-running process
+- `docker compose up patched-app` to start the long-running process with patched vendor to also `SFTP::ping` as a 
+  connectivity checker.
 
 Simulating the issue:
 
-After `proftpd` and `app` have started, open a shell on both.
+After `proftpd` and `app`/`patched-app` have started, open a shell on both.
 
 ```
 docker compose exec proftpd sh
-docker compose exec app sh
+docker container exec -it <app/patched-app_container_name> sh
 ```
 
-In the `app` service, install `net-tools`.
-
-```
-apt update && apt install net-tools
-```
-
-Lastly, in both watch the open handles with netstat.
+In the `app`/`patched-app` service, watch the open handles.
 
 ```
 watch -n2 "netstat -an | grep :2222"
